@@ -10,15 +10,47 @@ app.use(cors());
 const users = [];
 
 function checksExistsUserAccount(request, response, next) {
-  // Complete aqui
+  const { username } = request.headers
+
+  const user = users.find(user => user.username === username)
+  if (!user) {
+    return response.status(404).json({ error: 'User nor found exists' });
+  }
+  request.user = user
+
+  return next()
 }
 
 function checksCreateTodosUserAvailability(request, response, next) {
-  // Complete aqui
+  const { user } = request
+
+  const todo_lenght = user.todos.length
+
+  if ((user.pro == true) || (user.pro == false && todo_lenght < 10)) {
+    return next()
+  } else {
+    return response.status(403).json({ error: 'plano grátis e já tenha 10 todos cadastrados' })
+  }
+
 }
 
 function checksTodoExists(request, response, next) {
-  // Complete aqui
+  const { username } = request
+  const { id } = request.params
+
+  const user = users.find(user => user.username === username)
+  if (!user) {
+    return response.status(404).json({ error: 'User nor found exists' });
+  }
+
+  if (!validate(id, 4)) {
+    response.status(400).json({ error: 'Invalid id' });
+  }
+
+  const todo = user.todos.find(todo => todo.id === id)
+
+
+
 }
 
 function findUserById(request, response, next) {
